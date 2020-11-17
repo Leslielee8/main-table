@@ -1,5 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnChanges,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { faCheck, faStar, faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -13,7 +20,7 @@ import { DataApiHelperService } from '../services/data-api-helper.service';
   templateUrl: './main-table.component.html',
   styleUrls: ['./main-table.component.scss'],
 })
-export class MainTableComponent implements OnInit {
+export class MainTableComponent implements OnInit, AfterViewInit {
   faCheck = faCheck;
   faTimes = faTimes;
   faStar = faStar;
@@ -26,6 +33,7 @@ export class MainTableComponent implements OnInit {
   };
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(dataApiService: DataApiHelperService) {
     dataApiService.getList().subscribe((ls: Item[]) => {
@@ -37,15 +45,16 @@ export class MainTableComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  get displayedColumns() {
+  get displayedColumns(): unknown[] {
     return this.Columns.filter((r) => r.selected).map((r) => r.name);
   }
 
-  changeDisplayColumns(evt: DisplayedColumns) {
+  changeDisplayColumns(evt: DisplayedColumns): void {
     this.Columns = this.Columns.map((r) => {
       return {
         ...r,
@@ -54,7 +63,7 @@ export class MainTableComponent implements OnInit {
     });
   }
 
-  changeFilter(evt: any) {
+  changeFilter(evt: any): void {
     this.filter.showTrue = evt.showTrue;
     this.filter.showFalse = evt.showFalse;
     this.dataSource = new MatTableDataSource<Item>(
